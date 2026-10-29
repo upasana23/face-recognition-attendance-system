@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: smart-face-attendance-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    plan: standard
+    region: oregon
+    envVars:
+      - key: APP_NAME
+        value: "SmartFace Attendance API"
+      - key: CONFIDENCE_THRESHOLD
+        value: "75.0"
+    disk:
+      name: face-data-disk
+      mountPath: /app/backend/data
+      sizeGB: 5

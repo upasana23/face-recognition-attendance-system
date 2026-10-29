@@ -1,0 +1,9 @@
+{
+  "name": "smartface-frontend",
+  "version": "1.0.0",
+  "description": "Face Recognition-Based Smart Attendance System Frontend",
+  "private": true,
+  "scripts": {
+    "start": "npx serve ."
+  }
+}

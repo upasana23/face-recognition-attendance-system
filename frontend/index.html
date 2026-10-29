@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartFace | Face Recognition Attendance System</title>
+  <meta name="description" content="Intelligent biometric face recognition attendance system built with OpenCV, Haar Cascade, and LBPH.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">👁️</div>
+      <span class="brand-title">SmartFace</span>
+      <span class="brand-badge">LBPH AI</span>
+    </div>
+
+    <ul class="nav-menu">
+      <li class="nav-item active" data-tab="attendance" id="navAttendance">
+        <span class="nav-icon">📹</span>
+        <span class="nav-text">Live Attendance</span>
+      </li>
+      <li class="nav-item" data-tab="registration" id="navRegistration">
+        <span class="nav-icon">👤</span>
+        <span class="nav-text">Student Registration</span>
+      </li>
+      <li class="nav-item" data-tab="training" id="navTraining">
+        <span class="nav-icon">🧠</span>
+        <span class="nav-text">Model & Training</span>
+      </li>
+      <li class="nav-item" data-tab="reports" id="navReports">
+        <span class="nav-icon">📊</span>
+        <span class="nav-text">Reports & Analytics</span>
+      </li>
+      <li class="nav-item" data-tab="settings" id="navSettings">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-text">System Settings</span>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <div class="status-pill" id="backendStatusPill">
+        <div class="status-dot"></div>
+        <span>OpenCV Engine Ready</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content View -->
+  <main class="main-wrapper">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="page-title">
+        <h1>Smart Attendance System</h1>
+        <p>Real-time biometric face detection, LBPH recognition, and automated attendance logging.</p>
+      </div>
+      <div class="header-actions">
+        <div class="status-pill" id="cameraStatusPill">
+          <div class="status-dot"></div>
+          <span>Camera Standby</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- KPI Summary Grid -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Total Registered</span>
+          <div class="stat-icon">👥</div>
+        </div>
+        <div class="stat-value" id="kpiTotalRegistered">0</div>
+        <div class="stat-subtitle">Enrolled students in database</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Present Today</span>
+          <div class="stat-icon">✅</div>
+        </div>
+        <div class="stat-value" id="kpiTodayCount">0</div>
+        <div class="stat-subtitle">Unique students checked in</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Today's Rate</span>
+          <div class="stat-icon">📈</div>
+        </div>
+        <div class="stat-value" id="kpiAttendanceRate">0%</div>
+        <div class="stat-subtitle">Overall attendance percentage</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">LBPH Model</span>
+          <div class="stat-icon">⚡</div>
+        </div>
+        <div class="stat-value" id="kpiModelStatus" style="font-size: 1.5rem;">Checking...</div>
+        <div class="stat-subtitle">Face recognition engine status</div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: Live Attendance -->
+    <!-- ======================================================== -->
+    <section class="tab-content active" id="tab-attendance">
+      <div class="grid-2col">
+        <!-- Live Camera Viewport -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><span>🎥</span> Live Attendance Scanner</h2>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <select id="sessionSelector" class="form-select" style="width: auto; padding: 6px 12px; font-size: 0.85rem;">
+                <option value="Daily">Daily Session</option>
+                <option value="Morning">Morning Class</option>
+                <option value="Afternoon">Afternoon Class</option>
+                <option value="Lab">Lab Practical</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Video viewport with HUD overlay -->
+          <div class="webcam-viewport">
+            <video id="cameraVideo" autoplay playsinline muted></video>
+            <canvas id="cameraCanvasOverlay"></canvas>
+            <div class="camera-scanner-line"></div>
+          </div>
+
+          <!-- Recognition Outcome Banner -->
+          <div class="recognition-status-box" id="recognitionStatusBox" style="display: none;">
+            <div class="recognition-icon" id="recognitionIcon">🔍</div>
+            <div class="recognition-info">
+              <h4 id="recognitionTitle">Awaiting Scan</h4>
+              <p id="recognitionDetail">Align face in the frame.</p>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="camera-controls">
+            <button class="btn btn-primary" id="btnCaptureAttendance">
+              <span>📸</span> Mark Attendance
+            </button>
+            <label class="btn btn-secondary" style="margin: 0; cursor: pointer;">
+              <input type="checkbox" id="autoScanToggle" style="margin-right: 6px;"> Auto-Scan Mode
+            </label>
+            <label class="btn btn-secondary" style="margin: 0; cursor: pointer;">
+              <span>📁</span> Upload Photo
+              <input type="file" id="attendanceFileUpload" accept="image/*" style="display: none;">
+            </label>
+          </div>
+        </div>
+
+        <!-- Real-time Attendance Feed -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><span>📋</span> Real-time Attendance Feed</h2>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Duplicate Protected</span>
+          </div>
+
+          <div class="attendance-feed-list" id="liveAttendanceFeed">
+            <div style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.9rem;">
+              No attendance records yet today.<br>Face the camera to check in.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: Student Registration -->
+    <!-- ======================================================== -->
+    <section class="tab-content" id="tab-registration">
+      <div class="grid-2col">
+        <!-- Registration Form & Instructions -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><span>📝</span> Enrol New Student</h2>
+          </div>
+
+          <div id="regFormContainer">
+            <form id="studentRegForm">
+              <div class="form-group">
+                <label class="form-label" for="regStudentId">Student ID *</label>
+                <input type="text" id="regStudentId" class="form-input" placeholder="e.g. STU-1001" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="regStudentName">Full Name *</label>
+                <input type="text" id="regStudentName" class="form-input" placeholder="e.g. Alice Johnson" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="regDepartment">Department / Class</label>
+                <input type="text" id="regDepartment" class="form-input" placeholder="e.g. Computer Science" value="Computer Science">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="regEmail">Email Address (Optional)</label>
+                <input type="email" id="regEmail" class="form-input" placeholder="e.g. alice@university.edu">
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+                Proceed to Face Capture ➡️
+              </button>
+            </form>
+          </div>
+
+          <!-- Capture Progress Step -->
+          <div id="regCaptureSection" style="display: none;">
+            <div style="padding: 1rem; background: rgba(56, 189, 248, 0.1); border-radius: var(--radius-md); margin-bottom: 1rem;">
+              <h4 style="color: var(--primary); font-size: 0.95rem;">Registering Face for:</h4>
+              <p id="activeStudentDisplay" style="font-size: 1.1rem; font-weight: 700;"></p>
+            </div>
+
+            <div class="samples-progress-container">
+              <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600;">
+                <span>Face Samples Progress</span>
+                <span id="regProgressText">0 / 15 samples (0%)</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="regProgressFill"></div>
+              </div>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
+                💡 <em>Tip: During capture, slightly turn your head left, right, up, and down to train varying facial angles.</em>
+              </p>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-primary" id="btnStartBurst" style="flex: 1;">
+                <span>📸</span> Start Auto-Capture (15 Samples)
+              </button>
+              <button class="btn btn-secondary" id="btnResetReg">Cancel</button>
+            </div>
+
+            <div id="regCompleteSection" style="display: none; margin-top: 1.5rem; text-align: center;">
+              <div style="padding: 1rem; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-md);">
+                <p style="color: var(--success); font-weight: 600;">🎉 Face samples successfully captured!</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
+                  Train the LBPH model to activate recognition for this student.
+                </p>
+              </div>
+              <button class="btn btn-primary" id="btnTrainFromReg" style="margin-top: 1rem; width: 100%;">
+                🧠 Train Recognition Model Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Registration Camera Preview -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><span>📷</span> Registration Camera Preview</h2>
+          </div>
+          <div class="webcam-viewport">
+            <video id="regCameraVideo" autoplay playsinline muted></video>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem; text-align: center;">
+            Position your face centrally. Haar Cascade will crop, equalize contrast, and store 200x200 normalized face vectors.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: Model Training & Evaluation -->
+    <!-- ======================================================== -->
+    <section class="tab-content" id="tab-training">
+      <div class="grid-2col">
+        <!-- Model Control Panel -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><span>🧠</span> LBPH Model Manager</h2>
+            <span class="badge-pill" id="trainingStatusBadge">Checking...</span>
+          </div>
+
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+            The model uses Local Binary Patterns Histograms (LBPH) to extract invariant texture patterns from detected faces. It is computationally lightweight, robust against varying lighting, and runs real-time on CPU.
+          </p>
+
+          <div id="trainingStatusDetails" style="background: rgba(0,0,0,0.3); padding: 1.25rem; border-radius: var(--radius-md); font-size: 0.9rem; margin-bottom: 1.5rem;">
+            Loading training metrics...
+          </div>
+
+          <div style="display: flex; gap: 12px;">
+            <button class="btn btn-primary" id="btnTrainModel" style="flex: 1;">
+              <span>⚡</span> Train / Retrain Model
+            </button>
+            <button class="btn btn-secondary" id="btnRunEvaluation">
+              <span>📊</span> Run Evaluation
+            </button>
+          </div>
+        </div>
+
+        <!-- Evaluation Results Card -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><span>📈</span> Accuracy & Evaluation Metrics</h2>
+          </div>
+
+          <div id="evaluationResults">
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+              Click <strong>"Run Evaluation"</strong> to benchmark recognition accuracy, confidence distribution, and test predictions on dataset samples.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: Reports & Analytics -->
+    <!-- ======================================================== -->
+    <section class="tab-content" id="tab-reports">
+      <!-- Cumulative Student Attendance Analytics -->
+      <div class="glass-panel" style="margin-bottom: 2rem;">
+        <div class="panel-header">
+          <h2 class="panel-title"><span>📊</span> Student Attendance Rates</h2>
+          <button class="btn btn-secondary" id="btnExportCsv">
+            <span>📥</span> Download CSV Report
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Student ID</th>
+                <th>Student Name</th>
+                <th>Department</th>
+                <th>Sessions Present</th>
+                <th>Attendance Rate</th>
+                <th>Last Attended</th>
+              </tr>
+            </thead>
+            <tbody id="analyticsTableBody">
+              <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Loading student analytics...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Daily Report Filter -->
+      <div class="glass-panel">
+        <div class="panel-header">
+          <h2 class="panel-title"><span>📅</span> Daily Attendance Log</h2>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <label for="reportDatePicker" style="font-size: 0.85rem; color: var(--text-muted);">Select Date:</label>
+            <input type="date" id="reportDatePicker" class="form-input" style="width: auto; padding: 6px 12px; font-size: 0.85rem;">
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Student ID</th>
+                <th>Student Name</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Similarity %</th>
+                <th>Method</th>
+              </tr>
+            </thead>
+            <tbody id="dailyReportTableBody">
+              <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Select a date to view attendance records.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 5: System Settings & Deployment Config -->
+    <!-- ======================================================== -->
+    <section class="tab-content" id="tab-settings">
+      <div class="grid-2col">
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><span>⚙️</span> Backend API Configuration</h2>
+          </div>
+
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            When deploying this frontend to <strong>Vercel</strong>, connect it to your hosted Python backend (e.g., Render, Railway, Fly.io, or VPS).
+          </p>
+
+          <div class="form-group">
+            <label class="form-label" for="settingsApiUrl">Backend API Base URL</label>
+            <input type="url" id="settingsApiUrl" class="form-input" placeholder="http://localhost:8000" value="http://localhost:8000">
+          </div>
+
+          <button class="btn btn-primary" id="btnSaveSettings">
+            <span>🔗</span> Save & Test Connection
+          </button>
+        </div>
+
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><span>🛡️</span> Biometric Privacy & Ethics</h2>
+          </div>
+          <div style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">
+            <p><strong>• Consenting Participants:</strong> All face images are captured with explicit user awareness and session control.</p>
+            <p style="margin-top: 8px;"><strong>• Data Minimization:</strong> Facial images are converted to local grayscale normalized matrices and mathematical LBPH histogram vectors.</p>
+            <p style="margin-top: 8px;"><strong>• Threshold Verification:</strong> Recognition decisions strictly enforce Chi-Square distance confidence thresholding to prevent false identity attributions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer"></div>
+
+<!-- Scripts -->
+<script src="js/webcam.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

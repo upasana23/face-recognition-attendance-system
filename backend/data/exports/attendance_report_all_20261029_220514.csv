@@ -1,0 +1,26 @@
+Student ID,Student Name,Date,Time,Session,Status,Similarity %,Confidence (LBPH),Method
+STU-1004,David Chen,2026-10-29,10:55:28,Daily,Present,39.4%,60.62,webcam
+STU-1002,Marcus Vance,2026-10-29,10:47:02,Daily,Present,37.3%,62.66,webcam
+STU-1001,Elena Rostova,2026-10-29,10:14:59,Daily,Present,33.7%,66.26,webcam
+STU-1003,Amina Al-Mansoor,2026-10-29,09:37:57,Daily,Present,42.2%,57.8,webcam
+STU-1005,Sophia Rodriguez,2026-10-29,09:08:00,Daily,Present,49.0%,51.05,webcam
+STU-1002,Marcus Vance,2026-10-28,10:15:01,Daily,Present,52.6%,47.36,webcam
+STU-1003,Amina Al-Mansoor,2026-10-28,09:54:04,Daily,Present,49.4%,50.58,webcam
+STU-1005,Sophia Rodriguez,2026-10-28,08:56:31,Daily,Present,32.8%,67.23,webcam
+STU-1001,Elena Rostova,2026-10-28,08:54:29,Daily,Present,43.0%,57.05,webcam
+STU-1004,David Chen,2026-10-28,08:24:07,Daily,Present,54.7%,45.34,webcam
+STU-1001,Elena Rostova,2026-10-27,10:56:35,Daily,Present,42.8%,57.18,webcam
+STU-1004,David Chen,2026-10-27,08:56:24,Daily,Present,49.7%,50.3,webcam
+STU-1002,Marcus Vance,2026-10-27,08:00:52,Daily,Present,51.4%,48.61,webcam
+STU-1004,David Chen,2026-10-26,10:50:18,Daily,Present,54.1%,45.89,webcam
+STU-1002,Marcus Vance,2026-10-26,10:06:21,Daily,Present,36.0%,64.0,webcam
+STU-1005,Sophia Rodriguez,2026-10-26,08:18:24,Daily,Present,53.6%,46.4,webcam
+STU-1001,Elena Rostova,2026-10-26,08:13:16,Daily,Present,37.4%,62.64,webcam
+STU-1003,Amina Al-Mansoor,2026-10-26,08:04:20,Daily,Present,57.4%,42.58,webcam
+STU-1004,David Chen,2026-10-25,10:51:38,Daily,Present,54.0%,45.99,webcam
+STU-1001,Elena Rostova,2026-10-25,10:18:22,Daily,Present,47.6%,52.38,webcam
+STU-1002,Marcus Vance,2026-10-25,09:03:51,Daily,Present,33.0%,67.02,webcam
+STU-1001,Elena Rostova,2026-10-24,09:13:28,Daily,Present,49.3%,50.73,webcam
+STU-1002,Marcus Vance,2026-10-24,08:41:55,Daily,Present,57.5%,42.55,webcam
+STU-1003,Amina Al-Mansoor,2026-10-24,08:26:09,Daily,Present,53.0%,46.97,webcam
+STU-1004,David Chen,2026-10-24,08:01:04,Daily,Present,49.8%,50.25,webcam
