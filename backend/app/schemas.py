@@ -1,5 +1,6 @@
-from typing import Optional, List
-from pydantic import BaseModel, Field
+from typing import Optional, List, Any
+from datetime import datetime
+from pydantic import BaseModel, Field, field_validator
 
 class StudentCreate(BaseModel):
     student_id: str = Field(..., min_length=2, max_length=64, description="Unique student identification code")
@@ -14,8 +15,15 @@ class StudentResponse(BaseModel):
     department: Optional[str]
     email: Optional[str]
     image_count: int
-    created_at: Optional[str]
+    created_at: Optional[Any] = None  # accepts datetime or str
     is_active: bool
+
+    @field_validator("created_at", mode="before")
+    @classmethod
+    def coerce_created_at(cls, v):
+        if isinstance(v, datetime):
+            return v.isoformat()
+        return v
 
     class Config:
         from_attributes = True
@@ -31,12 +39,19 @@ class AttendanceResponse(BaseModel):
     student_name: str
     date: str
     time: str
-    timestamp: Optional[str]
+    timestamp: Optional[Any] = None
     confidence_score: Optional[float]
     similarity_percentage: Optional[float]
     session_name: str
     status: str
     verification_method: str
+
+    @field_validator("timestamp", mode="before")
+    @classmethod
+    def coerce_timestamp(cls, v):
+        if isinstance(v, datetime):
+            return v.isoformat()
+        return v
 
     class Config:
         from_attributes = True
