@@ -178,92 +178,107 @@
     <!-- ======================================================== -->
     <section class="tab-content" id="tab-registration">
       <div class="grid-2col">
-        <!-- Registration Form & Instructions -->
+        <!-- Registration Form & Capture -->
         <div class="glass-panel">
           <div class="panel-header">
             <h2 class="panel-title"><span>📝</span> Enrol New Student</h2>
           </div>
 
+          <!-- Step 1: Profile Form -->
           <div id="regFormContainer">
             <form id="studentRegForm">
               <div class="form-group">
                 <label class="form-label" for="regStudentId">Student ID *</label>
                 <input type="text" id="regStudentId" class="form-input" placeholder="e.g. STU-1001" required>
               </div>
-
               <div class="form-group">
                 <label class="form-label" for="regStudentName">Full Name *</label>
-                <input type="text" id="regStudentName" class="form-input" placeholder="e.g. Alice Johnson" required>
+                <input type="text" id="regStudentName" class="form-input" placeholder="e.g. Upasana Singh" required>
               </div>
-
               <div class="form-group">
                 <label class="form-label" for="regDepartment">Department / Class</label>
                 <input type="text" id="regDepartment" class="form-input" placeholder="e.g. Computer Science" value="Computer Science">
               </div>
-
               <div class="form-group">
-                <label class="form-label" for="regEmail">Email Address (Optional)</label>
-                <input type="email" id="regEmail" class="form-input" placeholder="e.g. alice@university.edu">
+                <label class="form-label" for="regEmail">Email (Optional)</label>
+                <input type="email" id="regEmail" class="form-input" placeholder="e.g. user@university.edu">
               </div>
-
-              <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+              <button type="submit" class="btn btn-primary" style="width:100%;margin-top:0.5rem">
                 Proceed to Face Capture ➡️
               </button>
             </form>
           </div>
 
-          <!-- Capture Progress Step -->
-          <div id="regCaptureSection" style="display: none;">
-            <div style="padding: 1rem; background: rgba(56, 189, 248, 0.1); border-radius: var(--radius-md); margin-bottom: 1rem;">
-              <h4 style="color: var(--primary); font-size: 0.95rem;">Registering Face for:</h4>
-              <p id="activeStudentDisplay" style="font-size: 1.1rem; font-weight: 700;"></p>
+          <!-- Step 2: Face Capture -->
+          <div id="regCaptureSection" style="display:none">
+
+            <!-- Who we're registering -->
+            <div style="padding:1rem;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);border-radius:12px;margin-bottom:1.25rem">
+              <div style="font-size:0.78rem;font-weight:600;color:var(--primary);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Registering Face For</div>
+              <div id="activeStudentBadge" style="font-size:1.1rem;font-weight:700"></div>
             </div>
 
+            <!-- Progress Bar -->
             <div class="samples-progress-container">
-              <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600;">
+              <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:600">
                 <span>Face Samples Progress</span>
-                <span id="regProgressText">0 / 15 samples (0%)</span>
+                <span id="regProgressText">0 / 20 samples (0%)</span>
               </div>
-              <div class="progress-bar-bg">
-                <div class="progress-bar-fill" id="regProgressFill"></div>
-              </div>
-              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
-                💡 <em>Tip: During capture, slightly turn your head left, right, up, and down to train varying facial angles.</em>
+              <div class="progress-bar-bg"><div class="progress-bar-fill" id="regProgressFill"></div></div>
+              <p style="font-size:0.8rem;color:var(--text-muted);margin-top:8px">
+                Tip: Slightly move your head left/right/up/down between captures for better accuracy.
               </p>
             </div>
 
-            <div style="display: flex; gap: 10px;">
-              <button class="btn btn-primary" id="btnStartBurst" style="flex: 1;">
-                <span>📸</span> Start Auto-Capture (15 Samples)
+            <!-- Option A: Webcam burst capture -->
+            <div style="display:flex;gap:10px;margin-bottom:1rem">
+              <button class="btn btn-primary" id="btnStartBurst" style="flex:1">
+                <span>📸</span> Auto-Capture via Webcam (20 shots)
               </button>
               <button class="btn btn-secondary" id="btnResetReg">Cancel</button>
             </div>
 
-            <div id="regCompleteSection" style="display: none; margin-top: 1.5rem; text-align: center;">
-              <div style="padding: 1rem; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-md);">
-                <p style="color: var(--success); font-weight: 600;">🎉 Face samples successfully captured!</p>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
-                  Train the LBPH model to activate recognition for this student.
-                </p>
-              </div>
-              <button class="btn btn-primary" id="btnTrainFromReg" style="margin-top: 1rem; width: 100%;">
-                🧠 Train Recognition Model Now
-              </button>
+            <!-- Option B: Upload photos from device -->
+            <div style="padding:1rem;background:rgba(0,0,0,0.25);border:1px dashed var(--border-color);border-radius:12px">
+              <div style="font-size:0.85rem;font-weight:600;margin-bottom:8px">📁 Or Upload Face Photos from Your Device</div>
+              <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:10px">Select 10–30 clear photos of your face. Different angles and lighting give better recognition.</p>
+              <label class="btn btn-secondary" style="cursor:pointer;width:100%;justify-content:center">
+                <span>📂</span> Choose Images (multi-select OK)
+                <input type="file" id="regImageUpload" accept="image/*" multiple style="display:none">
+              </label>
             </div>
+
+            <!-- Inline training result (shown after auto-train) -->
+            <div id="regTrainingProgress" style="display:none"></div>
+
+            <!-- Go to Attendance (shown after training succeeds) -->
+            <button class="btn btn-primary" id="btnGotoAttendance" style="display:none;width:100%;margin-top:1rem;font-size:1rem">
+              🚀 Go to Live Attendance
+            </button>
+
           </div>
         </div>
 
         <!-- Registration Camera Preview -->
         <div class="glass-panel">
           <div class="panel-header">
-            <h2 class="panel-title"><span>📷</span> Registration Camera Preview</h2>
+            <h2 class="panel-title"><span>📷</span> Registration Camera</h2>
+            <div class="status-pill" id="regCamStatusPill">
+              <div class="status-dot offline"></div><span>Camera starting...</span>
+            </div>
           </div>
+
           <div class="webcam-viewport">
             <video id="regCameraVideo" autoplay playsinline muted></video>
           </div>
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem; text-align: center;">
-            Position your face centrally. Haar Cascade will crop, equalize contrast, and store 200x200 normalized face vectors.
-          </p>
+
+          <div style="margin-top:1rem;padding:1rem;background:rgba(0,0,0,0.2);border-radius:10px;font-size:0.82rem;color:var(--text-muted)">
+            <strong style="color:var(--text-main)">How to get best results:</strong><br>
+            📌 Look directly at the camera for the first few shots<br>
+            📌 Slightly tilt left, right, up, down for coverage<br>
+            📌 Ensure good lighting — face should be clearly visible<br>
+            📌 No sunglasses or face coverings
+          </div>
         </div>
       </div>
     </section>
