@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment files
+.env
+
+# Data directories (persistent; do not commit to repo)
+backend/data/dataset/
+backend/data/models/
+backend/data/exports/
+backend/data/attendance.db
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node modules (frontend)
+node_modules/
+
+# Cloned repo subfolder (if exists)
+face-recognition-attendance-system/
